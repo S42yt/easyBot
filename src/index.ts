@@ -1,4 +1,11 @@
 import { Client } from "revolt.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+if (!process.env.BOT_TOKEN) {
+  throw new Error("BOT_TOKEN is not defined in the .env file");
+}
 
 let client = new Client();
 
@@ -12,4 +19,6 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-client.loginBot("BOT_TOKEN");
+client.loginBot(process.env.BOT_TOKEN as string).catch((error) => {
+  console.error("Failed to login:", error);
+});
