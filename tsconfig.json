@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",             // Ziel-JavaScript-Version
+        "module": "commonjs",           // Modulauflösung für Node.js
+        "allowJs": true,                // Erlaube das Kompilieren von JavaScript-Dateien
+        "checkJs": false,               // Optional: Überprüfe JavaScript-Dateien nicht auf Typen
+        "outDir": "./dist",             // Ausgabeverzeichnis
+        "esModuleInterop": true,        // Ermögliche den Import von CommonJS-Modulen
+        "skipLibCheck": true,           // Überspringe Typüberprüfung in Bibliotheken
+        "moduleResolution": "node",     // Modulauflösung
+        "resolveJsonModule": true,      // Ermöglicht den Import von JSON-Dateien
+        "strict": true,                 // Aktiviert strikte Typüberprüfung (optional)
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
+}

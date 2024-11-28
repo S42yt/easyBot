@@ -1,0 +1,24 @@
+{
+    "name": "revolt-bot",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "npx ts-node src/index.ts",
+        "prod": "STATE=\"prod\" npx ts-node src/index.ts",
+        "build": "npx tsc"
+    },
+    "author": "S42",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "revolt.js": "^7.0.4",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.2"
+    },
+    "devDependencies": {
+        "@types/node": "^22.8.0",
+        "typescript": "^5.6.3"
+    }
+}
