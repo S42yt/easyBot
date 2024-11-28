@@ -14,11 +14,13 @@ client.on("ready", async () =>
 );
 
 client.on("messageCreate", async (message) => {
-  if (message.content === "!hello") {
-    message.channel?.sendMessage("world");
+  if (message.content === "pic") {
+    message.channel?.sendMessage("sensin pic oruspu çocuğu seni embesis ayri");
   }
 });
 
 client.loginBot(process.env.BOT_TOKEN as string).catch((error) => {
   console.error("Failed to login:", error);
 });
+
+export default client;
