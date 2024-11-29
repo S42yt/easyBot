@@ -2,10 +2,13 @@
 type EmbedType = {
     colour?: null | string;
     description?: null | string;
+    fields?: null | string;
+    footer?: null | string;
     icon_url?: null | string;
     media?: null | string;
     title?: null | string;
     url?: null | string;
+    timestamp?: null | string;
   };
   
   class EmbedBuilder {
@@ -24,6 +27,20 @@ type EmbedType = {
       this.embed.description = description;
       return this;
     }
+
+    addField(name: string, value: string): EmbedBuilder {
+        if (!this.embed.fields) {
+          this.embed.fields = '';
+        }
+        this.embed.fields += `${name}: ${value}\n`;
+        return this;
+      }
+
+    setFooter(footer: string): EmbedBuilder {
+        this.embed.footer = footer;
+        return this;
+      }
+  
   
     setIconUrl(icon_url: string): EmbedBuilder {
       this.embed.icon_url = icon_url;
@@ -44,6 +61,11 @@ type EmbedType = {
       this.embed.url = url;
       return this;
     }
+
+    setTimestamp(timestamp: string): EmbedBuilder {
+        this.embed.timestamp = timestamp;
+        return this;
+      }
   
     build(): EmbedType {
       return this.embed;
