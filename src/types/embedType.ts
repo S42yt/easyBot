@@ -1,71 +1,53 @@
-import { TextEmbed, API } from 'revolt.js';
 
-export type EmbedOptions = {
-    title?: string;
-    description?: string;
-    color?: string;
-    fields?: { name: string; value: string; inline?: boolean }[];
-    thumbnail?: string;
-    image?: string;
-    footer?: { text: string; icon_url?: string };
-    timestamp?: string;
-    url?: string;
-    author?: { name: string; url?: string; icon_url?: string };
-};
-
-export function createEmbed(options: EmbedOptions): TextEmbed {
-    // Create the embed object
-    const embed = new TextEmbed();
-
-    // Set the title if provided
-    if (options.title) {
-        embed.setTitle(options.title);
+type EmbedType = {
+    colour?: null | string;
+    description?: null | string;
+    icon_url?: null | string;
+    media?: null | string;
+    title?: null | string;
+    url?: null | string;
+  };
+  
+  class EmbedBuilder {
+    private embed: EmbedType;
+  
+    constructor() {
+      this.embed = {};
     }
-
-    // Set the description if provided
-    if (options.description) {
-        embed.setDescription(options.description);
+  
+    setColour(colour: string): EmbedBuilder {
+      this.embed.colour = colour;
+      return this;
     }
-
-    // Set the color if provided
-    if (options.color) {
-        embed.setColor(options.color);  // Using 'setColor' as it's more typical for color methods
+  
+    setDescription(description: string): EmbedBuilder {
+      this.embed.description = description;
+      return this;
     }
-
-    // Add fields if provided
-    if (options.fields) {
-        options.fields.forEach(field => {
-            embed.addField(field.name, field.value, field.inline);
-        });
+  
+    setIconUrl(icon_url: string): EmbedBuilder {
+      this.embed.icon_url = icon_url;
+      return this;
     }
-
-    // Set the thumbnail if provided
-    if (options.thumbnail) {
-        embed.setThumbnail(options.thumbnail);
+  
+    setMedia(media: string): EmbedBuilder {
+      this.embed.media = media;
+      return this;
     }
-
-    // Set the image if provided
-    if (options.image) {
-        embed.setImage(options.image);
+  
+    setTitle(title: string): EmbedBuilder {
+      this.embed.title = title;
+      return this;
     }
-
-    // Set the footer if provided
-    if (options.footer) {
-        embed.setFooter(options.footer.text, options.footer.icon_url);
+  
+    setUrl(url: string): EmbedBuilder {
+      this.embed.url = url;
+      return this;
     }
-
-    // Set the timestamp if provided
-    if (options.timestamp) {
-        embed.setTimestamp(new Date(options.timestamp).getTime());  // Make sure it's in milliseconds
+  
+    build(): EmbedType {
+      return this.embed;
     }
-
-    if (options.url) {
-        embed.setURL(options.url);
-    }
-
-    if (options.author) {
-        embed.setAuthor(options.author.name, options.author.icon_url, options.author.url);
-    }
-
-    return embed;
-}
+  }
+  
+  export default EmbedBuilder;

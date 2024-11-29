@@ -14,3 +14,5 @@ const helpCommand = {
         }
     }
 };
+
+export default helpCommand;
