@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import Logger from '../utils/logger';
+import { createEmbed, EmbedOptions } from '../types/embedType';
 
 dotenv.config();
 
@@ -60,7 +61,7 @@ class CommandHandler {
             const command = await import(`../commands/${commandName}`);
 
             if (command.default.execute) {
-                await command.default.execute(message, args);
+                await command.default.execute(message, args, this.sendResponse);
             } else {
                 await message.channel?.sendMessage('Unknown command.');
             }
@@ -71,6 +72,16 @@ class CommandHandler {
 
     private async registerRevoltCommands(commands: any[]) {
         // Implement the method to register commands in Revolt.js
+    }
+
+    private async sendResponse(message: Message, content: string | EmbedOptions, useEmbed: boolean = false) {
+        if (useEmbed && typeof content !== 'string') {
+            const embed = createEmbed(content);
+            const embedToSend = { ...embed, media: embed.media ? embed.media.toString() : null };
+            await message.channel?.sendMessage({ embeds: [embedToSend] });
+        } else if (typeof content === 'string') {
+            await message.channel?.sendMessage(content);
+        }
     }
 }
 

@@ -11,6 +11,13 @@ class Logger {
         }
     }
 
+    public async info(message: string, logToConsole: boolean = false) {
+        const infoMessage = `Info: ${message}`;
+        if (logToConsole) {
+            console.info(message);
+        }
+    }
+
     public async error(message: string, error?: any, logToConsole: boolean = false) {
         const errorMessage = `Error: ${message}` + (error ? ` - ${error}` : '');
         if (logToConsole) {
