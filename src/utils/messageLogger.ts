@@ -36,7 +36,7 @@ class MessageLogger {
             .setTitle("New Message")
             .setDescription(message.content)
             .setColour("#00FF00")
-            .setFooter(`Author: ${message.author?.username}`);
+            .setFooter({ text: `Author: ${message.author?.username}` });
 
         await this.sendEmbed(embed);
     }
@@ -47,7 +47,7 @@ class MessageLogger {
             .setTitle("Message Edited")
             .setDescription(message.content)
             .setColour("#FFFF00")
-            .setFooter(`Author: ${message.author?.username}`);
+            .setFooter( {text:`Author: ${message.author?.username}`});
 
         await this.sendEmbed(embed);
     }
@@ -58,7 +58,7 @@ class MessageLogger {
             .setTitle("Message Deleted")
             .setDescription(message.content || 'Content not available')
             .setColour("#FF0000")
-            .setFooter(`Author: ${message.author?.username}`);
+            .setFooter({text:`Author: ${message.author?.username}`});
 
         await this.sendEmbed(embed);
     }

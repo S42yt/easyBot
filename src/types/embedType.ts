@@ -1,9 +1,8 @@
-
 type EmbedType = {
     colour?: null | string;
     description?: null | string;
     fields?: null | string;
-    footer?: null | string;
+    footer?: null | { text: string; iconURL?: string };
     icon_url?: null | string;
     media?: null | string;
     title?: null | string;
@@ -36,7 +35,7 @@ type EmbedType = {
         return this;
       }
 
-    setFooter(footer: string): EmbedBuilder {
+    setFooter(footer: { text: string; iconURL?: string }): EmbedBuilder {
         this.embed.footer = footer;
         return this;
       }
