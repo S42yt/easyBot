@@ -1,77 +1,100 @@
 import path from "path";
 import fs from "fs";
-import { Client } from "revolt.js";
-import { ClientEvent } from "../types/clientEvent";
+import { Client, Channel } from "revolt.js";
 import EmbedBuilder from "../types/embedType";
 import MessageType from "../types/messageType";
 import Logger from '../utils/logger';
+import dotenv from 'dotenv';
 
-export default class EventHandler {
-    private static events: Map<string, Function[]> = new Map();
+dotenv.config();
 
-    public static initEvents(client: Client, logger: Logger) {
-        const files = fs.readdirSync(path.join(__dirname, "../events"));
+class EventHandler {
+    public static client: Client;
+    private token: string;
+    private logger: Logger;
+    private events: Map<string, Function[]>;
 
-        for (const file of files) {
-            if (
-                (!file.endsWith(".ts") && !file.endsWith(".js")) ||
-                file.startsWith("_")
-            ) {
-                logger.log("Skipping event file: " + file, true);
-                continue;
-            }
+    constructor() {
+        this.token = process.env.BOT_TOKEN || '';
+        EventHandler.client = new Client();
+        this.logger = new Logger();
+        this.events = new Map();
 
-            const event: ClientEvent = require(path.join(__dirname, "../events", file)).default;
+        EventHandler.client.once('ready', async () => {
+            await this.logger.info('Event Handler Ready!', true);
+        });
 
-            if (!event || !event.name) {
-                logger.log(`Invalid event structure in file: ${file}`, true);
-                continue;
-            }
+        EventHandler.client.on('messageCreate', async (message: MessageType) => {
+            if (!message.content.startsWith('!')) return;
+            await this.handleEvent(message);
+        });
 
-            const funcsInEvent = this.events.get(event.name);
+        EventHandler.client.loginBot(this.token);
+    }
 
-            if (funcsInEvent) {
-                funcsInEvent.push(event.run);
-                this.events.set(event.name, funcsInEvent);
+    async initEvents() {
+        const eventFiles = fs.readdirSync(path.join(__dirname, '../events')).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
+        for (const file of eventFiles) {
+            const event = await import(`../events/${file}`);
+            if (event.default && event.default.name) {
+                if (!this.events.has(event.default.name)) {
+                    this.events.set(event.default.name, []);
+                }
+                this.events.get(event.default.name)?.push(event.default.run);
             } else {
-                this.events.set(event.name, [event.run]);
+                console.warn(`Invalid event structure in file: ${file}. Skipping registration.`);
             }
         }
 
-        this.setupHandlers(client, logger);
+        try {
+            await this.logger.info('Events registered successfully.', true);
+        } catch (error: any) {
+            await this.logger.error(`Error registering events: ${error.message}`, true);
+        }
     }
 
-    private static setupHandlers(client: Client, logger: Logger) {
-        client.on('messageCreate', (message: MessageType) => {
-            logger.log(`Message event triggered.`, true);
-            const handlers = this.events.get('message');
-            if (handlers) {
-                for (const handler of handlers) {
+    private async handleEvent(message: MessageType) {
+        const args = message.content.slice(1).trim().split(/ +/);
+        const eventName = args.shift()?.toLowerCase();
+
+        if (this.events.has(eventName!)) {
+            const eventHandlers = this.events.get(eventName!);
+            if (eventHandlers) {
+                for (const handler of eventHandlers) {
                     try {
-                        handler(client, message);
-                        logger.log(`Message event handled successfully.`, true);
+                        await handler(EventHandler.client, message, args);
                     } catch (error: any) {
-                        logger.error(`Error handling message event: ${error.message}`, error, true);
+                        await this.logger.error(`Error executing event: ${error.message}`, true);
                     }
                 }
             }
-        });
+        } else {
+        }
+    }
 
-        client.on('ready', () => {
-            logger.log(`Ready event triggered.`, true);
-            const handlers = this.events.get('ready');
-            if (handlers) {
-                for (const handler of handlers) {
-                    try {
-                        handler(client);
-                        logger.log(`Ready event handled successfully.`, true);
-                    } catch (error: any) {
-                        logger.error(`Error handling ready event: ${error.message}`, error, true);
-                    }
-                }
+    public async sendMessageToChannel(channelId: string, content: string, embed?: EmbedBuilder) {
+        try {
+            this.logger.log(`Fetching channel with ID: ${channelId}`, true);
+            const channel = await EventHandler.client.channels.fetch(channelId);
+            if (!channel) {
+                throw new Error('Channel not found');
             }
-        });
 
-        // Add more specific event handlers as needed
+            this.logger.info(`Channel found: ${channelId}`, true);
+
+            if (embed) {
+                this.logger.log('Sending message with embed', true);
+                await channel.sendMessage({ content, embeds: [embed.build()] });
+            } else {
+                this.logger.log('Sending message without embed', true);
+                await channel.sendMessage({ content });
+            }
+
+            this.logger.log(`Message sent to channel: ${channelId}`, true);
+        } catch (error: any) {
+            await this.logger.error(`Failed to send message to channel '${channelId}': ${error.message}`, error, true);
+        }
     }
 }
+
+export default EventHandler;

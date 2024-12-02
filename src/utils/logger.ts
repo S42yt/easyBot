@@ -13,22 +13,31 @@ class Logger {
 
     public async info(message: string, logToConsole: boolean = false) {
         const infoMessage = `Info: ${message}`;
+        const greenColor = '\x1b[32m'; // ANSI escape code for green
+        const resetColor = '\x1b[0m'; // ANSI escape code to reset color
+
         if (logToConsole) {
-            console.info(message);
+            console.info(`${greenColor}${infoMessage}${resetColor}`);
         }
     }
 
     public async error(message: string, error?: any, logToConsole: boolean = false) {
         const errorMessage = `Error: ${message}` + (error ? ` - ${error}` : '');
+        const redColor = '\x1b[31m'; // ANSI escape code for red
+        const resetColor = '\x1b[0m'; // ANSI escape code to reset color
+
         if (logToConsole) {
-            console.error(errorMessage);
+            console.error(`${redColor}${errorMessage}${resetColor}`);
         }
     }
 
     public async warn(message: string, logToConsole: boolean = false) {
         const warningMessage = `Warning: ${message}`;
+        const yellowColor = '\x1b[33m'; // ANSI escape code for yellow
+        const resetColor = '\x1b[0m'; // ANSI escape code to reset color
+
         if (logToConsole) {
-            console.warn(warningMessage);
+            console.warn(`${yellowColor}${warningMessage}${resetColor}`);
         }
     }
 

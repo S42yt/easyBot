@@ -1,4 +1,4 @@
-import { Client, Message } from 'revolt.js';
+import { Client,Message } from 'revolt.js';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
@@ -19,7 +19,7 @@ class CommandHandler {
         this.logger = new Logger();
 
         CommandHandler.client.once('ready', async () => {
-            await this.logger.log('Command Handler Ready: Command Handler ist Bereit!', true);
+            await this.logger.info('Command Handler Ready!', true);
         });
 
         CommandHandler.client.on('messageCreate', async (message) => {
@@ -47,9 +47,9 @@ class CommandHandler {
 
         try {
             await this.registerRevoltCommands(commands);
-            await this.logger.log('Commands registered successfully.', true);
+            await this.logger.info('Commands registered successfully.', true);
         } catch (error: any) {
-            await this.logger.log(`Error registering commands: ${error.message}`, true);
+            await this.logger.error(`Error registering commands: ${error.message}`, true);
         }
     }
 
@@ -66,7 +66,7 @@ class CommandHandler {
                 await message.channel?.sendMessage('Unknown command.');
             }
         } catch (error: any) {
-            await this.logger.log(`Error executing command: ${error.message}`, true);
+            await this.logger.error(`Error executing command: ${error.message}`, true);
         }
     }
 
