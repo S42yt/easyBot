@@ -16,7 +16,7 @@ class JoinRole implements ClientEvent {
             const joinRoleId = process.env.JOIN_ROLE!;
             logger.log(`Fetched join role ID: ${joinRoleId}`, true);
 
-            await member.addRole(joinRoleId);
+            await member.edit({ roles: [...member.roles, joinRoleId] });
             logger.log(`Assigned role ${joinRoleId} to user ${member.displayName}`, true);
         } catch (error) {
             logger.error(`Error assigning role: ${(error as Error).message}`, error, true);

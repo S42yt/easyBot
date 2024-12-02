@@ -1,11 +1,9 @@
-import { Client, Message } from 'revolt.js';
-import dotenv from 'dotenv';
-import fs from 'fs';
 import path from 'path';
+import fs from 'fs';
+import { Client, Message } from 'revolt.js';
+import ClientEvent from '../types/clientEvent';
 import Logger from '../utils/logger';
 import EmbedBuilder from '../types/embedType';
-
-dotenv.config();
 
 class CommandHandler {
     public static client: Client;
@@ -37,6 +35,7 @@ class CommandHandler {
             const command = await import(`../commands/${file}`);
             this.commands.set(command.default.name, command.default);
         }
+        this.logger.info('Commands registered successfully!', true);
     }
 
     private async handleCommand(message: Message) {
@@ -54,21 +53,47 @@ class CommandHandler {
             const embed = new EmbedBuilder()
                 .setTitle('Command Not Found')
                 .setDescription('This Command doesn\'t exist')
-                .setColour('#FF0000');
+                .setColour('#00FF00'); // Green
 
-            const replyMessage = await message.channel?.sendMessage({ embeds: [embed.build()] });
+            const replyMessage = await message.reply({ embeds: [embed.build()] });
 
-            // Delete the user's message and the bot's reply after 5 seconds
+            // Change color from green to yellow to red
+            setTimeout(async () => {
+                embed.setColour('#FFFF00'); // Yellow
+                await replyMessage?.edit({ embeds: [embed.build()] });
+            }, 1000);
+
+            setTimeout(async () => {
+                embed.setColour('#FF0000'); // Red
+                await replyMessage?.edit({ embeds: [embed.build()] });
+            }, 2000);
+
+            // Delete the user's message and the bot's reply after 3 seconds
             setTimeout(async () => {
                 try {
-                    await message.delete();
+                    CommandHandler.client.emit('messageDelete', message);
                     if (replyMessage) {
-                        await replyMessage.delete();
+                        CommandHandler.client.emit('messageDelete', replyMessage);
                     }
                 } catch (error: any) {
                     await this.logger.error(`Error deleting messages: ${error.message}`, true);
                 }
-            }, 5000);
+            }, 3000);
+
+            // Log the event
+            await this.logger.log(`Command not found: ${commandName}`, true);
+        }
+    }
+
+    private async registerRevoltCommands(commands: any[]) {
+        // Implement the method to register commands in Revolt.js
+    }
+
+    private async sendResponse(message: Message, content: string, embed?: EmbedBuilder) {
+        if (embed) {
+            await message.channel?.sendMessage({ embeds: [embed.build()] });
+        } else {
+            await message.channel?.sendMessage(content);
         }
     }
 }
