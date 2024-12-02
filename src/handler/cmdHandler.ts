@@ -1,4 +1,4 @@
-import { Client,Message } from 'revolt.js';
+import { Client, Message } from 'revolt.js';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
@@ -11,18 +11,19 @@ class CommandHandler {
     public static client: Client;
     private token: string;
     private logger: Logger;
+    private commands: Map<string, any>;
 
     constructor() {
         this.token = process.env.BOT_TOKEN || '';
         CommandHandler.client = new Client();
-
         this.logger = new Logger();
+        this.commands = new Map();
 
         CommandHandler.client.once('ready', async () => {
             await this.logger.info('Command Handler Ready!', true);
         });
 
-        CommandHandler.client.on('messageCreate', async (message) => {
+        CommandHandler.client.on('messageCreate', async (message: Message) => {
             if (!message.content.startsWith('!')) return;
             await this.handleCommand(message);
         });
@@ -31,25 +32,10 @@ class CommandHandler {
     }
 
     async registerCommands() {
-        const commands: any[] = [];
-        const commandNames = new Set<string>();
-
         const commandFiles = fs.readdirSync(path.join(__dirname, '../commands')).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
         for (const file of commandFiles) {
             const command = await import(`../commands/${file}`);
-            if (commandNames.has(command.default.name)) {
-                console.warn(`Duplicate command name found: ${command.default.name}. Skipping registration.`);
-                continue;
-            }
-            commandNames.add(command.default.name);
-            commands.push(command.default);
-        }
-
-        try {
-            await this.registerRevoltCommands(commands);
-            await this.logger.info('Commands registered successfully.', true);
-        } catch (error: any) {
-            await this.logger.error(`Error registering commands: ${error.message}`, true);
+            this.commands.set(command.default.name, command.default);
         }
     }
 
@@ -57,28 +43,32 @@ class CommandHandler {
         const args = message.content.slice(1).trim().split(/ +/);
         const commandName = args.shift()?.toLowerCase();
 
-        try {
-            const command = await import(`../commands/${commandName}`);
-
-            if (command.default.execute) {
-                await command.default.execute(message, args, this.sendResponse);
-            } else {
-                await message.channel?.sendMessage('Unknown command.');
+        if (this.commands.has(commandName!)) {
+            const command = this.commands.get(commandName!);
+            try {
+                await command.execute(message, args);
+            } catch (error: any) {
+                await this.logger.error(`Error executing command: ${error.message}`, true);
             }
-        } catch (error: any) {
-            await this.logger.error(`Error executing command: ${error.message}`, true);
-        }
-    }
-
-    private async registerRevoltCommands(commands: any[]) {
-        // Implement the method to register commands in Revolt.js
-    }
-
-    private async sendResponse(message: Message, content: string, embed?: EmbedBuilder) {
-        if (embed) {
-            await message.channel?.sendMessage({ embeds: [embed.build()] });
         } else {
-            await message.channel?.sendMessage(content);
+            const embed = new EmbedBuilder()
+                .setTitle('Command Not Found')
+                .setDescription('This Command doesn\'t exist')
+                .setColour('#FF0000');
+
+            const replyMessage = await message.channel?.sendMessage({ embeds: [embed.build()] });
+
+            // Delete the user's message and the bot's reply after 5 seconds
+            setTimeout(async () => {
+                try {
+                    await message.delete();
+                    if (replyMessage) {
+                        await replyMessage.delete();
+                    }
+                } catch (error: any) {
+                    await this.logger.error(`Error deleting messages: ${error.message}`, true);
+                }
+            }, 5000);
         }
     }
 }
