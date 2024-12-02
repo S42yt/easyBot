@@ -23,7 +23,7 @@ const pingCommand = {
         .setColour("#03fc1c");
 
       await sentMessage?.edit({ embeds: [updatedEmbed.build()] });
-      await logger.log(`Executed 'ping' command by ${message.author?.username}`, false);
+      await logger.log(`Executed 'ping' command by ${message.author?.username}`, true);
     } catch (error: any) {
       await logger.error(`Failed to execute 'ping' command: ${error.message}`, error, true);
 
