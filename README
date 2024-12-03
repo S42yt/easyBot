@@ -1,5 +1,3 @@
-# Revolt Util Bot
+# Easy Bot
 
-This is a Bot for the Rust Chat Platform Revolt.
-
-Its Written TypeScript.
+This is a General Purpose revolt bot written in revolt.js
