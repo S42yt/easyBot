@@ -1,4 +1,5 @@
 import { Client } from "revolt.js";
+import JoinRole from "./events/joinrole";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -14,13 +15,20 @@ client.on("ready", async () =>
 );
 
 
+client.on('serverMemberJoin', (member) => {
+  JoinRole.run(client, member);
+});
+
+
   
-
 export function startClient() {
+  client.loginBot(process.env.BOT_TOKEN as string).catch((error) => {
+    console.error("Failed to login:", error);
+  });
+}
 
-client.loginBot(process.env.BOT_TOKEN as string).catch((error) => {
-  console.error("Failed to login:", error);
-})};
+startClient();
+
 
 
 

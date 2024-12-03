@@ -33,17 +33,18 @@ class CommandHandler {
         const commandFiles = fs.readdirSync(path.join(__dirname, '../commands')).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
         for (const file of commandFiles) {
             const command = await import(`../commands/${file}`);
-            this.commands.set(command.default.name, command.default);
+            // Store commands in lowercase to ensure case-insensitivity
+            this.commands.set(command.default.name.toLowerCase(), command.default);
         }
         this.logger.info('Commands registered successfully!', true);
     }
 
     private async handleCommand(message: Message) {
         const args = message.content.slice(1).trim().split(/ +/);
-        const commandName = args.shift()?.toLowerCase();
+        const commandName = args.shift()?.toLowerCase(); // Always convert command name to lowercase
 
-        if (this.commands.has(commandName!)) {
-            const command = this.commands.get(commandName!);
+        if (commandName && this.commands.has(commandName)) {
+            const command = this.commands.get(commandName);
             try {
                 await command.execute(message, args);
             } catch (error: any) {
@@ -81,7 +82,7 @@ class CommandHandler {
             }, 3000);
 
             // Log the event
-            await this.logger.log(`Command not found: ${commandName}`, true);
+            await this.logger.warn(`Command not found: ${commandName}`, true);
         }
     }
 
