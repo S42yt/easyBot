@@ -1,5 +1,5 @@
 import { Client, ServerMember } from 'revolt.js';
-import { ClientEvent } from '../types/clientEvent';
+import { ClientEvent } from '../types/easyClientEvent';
 import Logger from '../utils/logger';
 import dotenv from 'dotenv';
 

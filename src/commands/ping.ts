@@ -1,6 +1,6 @@
 import { Message } from "revolt.js";
 import Logger from "../utils/logger";
-import EmbedBuilder from "../types/embedType";
+import EmbedBuilder from "../types/easyEmbed";
 
 const pingCommand = {
     name: "ping",

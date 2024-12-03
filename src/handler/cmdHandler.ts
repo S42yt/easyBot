@@ -1,9 +1,9 @@
 import path from 'path';
 import fs from 'fs';
 import { Client, Message } from 'revolt.js';
-import ClientEvent from '../types/clientEvent';
+import ClientEvent from '../types/easyClientEvent';
 import Logger from '../utils/logger';
-import EmbedBuilder from '../types/embedType';
+import EmbedBuilder from '../types/easyEmbed';
 
 class CommandHandler {
     public static client: Client;

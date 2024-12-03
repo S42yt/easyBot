@@ -1,8 +1,8 @@
 import path from "path";
 import fs from "fs";
-import { Client, Channel } from "revolt.js";
-import EmbedBuilder from "../types/embedType";
-import MessageType from "../types/messageType";
+import { Client } from "revolt.js";
+import EmbedBuilder from "../types/easyEmbed";
+import { EasyMessage } from "../types/easyMessage";
 import Logger from '../utils/logger';
 import dotenv from 'dotenv';
 
@@ -24,9 +24,10 @@ class EventHandler {
             await this.logger.info('Event Handler Ready!', true);
         });
 
-        EventHandler.client.on('messageCreate', async (message: MessageType) => {
-            if (!message.content.startsWith('!')) return;
-            await this.handleEvent(message);
+        EventHandler.client.on('messageCreate', async (message) => {
+            const easyMessage = message as EasyMessage;
+            if (!easyMessage.content.startsWith('!')) return;
+            await this.handleEvent(easyMessage);
         });
 
         EventHandler.client.loginBot(this.token);
@@ -53,7 +54,7 @@ class EventHandler {
         }
     }
 
-    private async handleEvent(message: MessageType) {
+    private async handleEvent(message: EasyMessage) {
         const args = message.content.slice(1).trim().split(/ +/);
         const eventName = args.shift()?.toLowerCase();
 

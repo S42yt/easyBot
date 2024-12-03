@@ -1,7 +1,7 @@
 import Logger from './logger';
 import { Message, Channel, Client } from 'revolt.js';
 import dotenv from 'dotenv';
-import EmbedBuilder from '../types/embedType';
+import EmbedBuilder from '../types/easyEmbed';
 
 dotenv.config();
 
