@@ -27,7 +27,6 @@ export function startClient() {
   });
 }
 
-startClient();
 
 
 
