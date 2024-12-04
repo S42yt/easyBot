@@ -12,7 +12,11 @@
   - `!help`: Displays a list of available commands.
   - `!hallo`: Sends a welcome message.
   
-- **Admin Commands**
+- **Admin/Moderator Commands**
+  - `!ban <username>`: Bans a user from the server.
+  - `!mute <username> <time>`: Mutes a user in the server.
+  - `!kick <username>`: Kicks a user from the server.
+  - `!unmute <username>`: Unmutes a user in the server.
   - `!eventStart <event>`: Starts a specified event.
   - `!standartRole`: Assigns a standard role to all online members.
   - `!ping`: Checks the bot's latency.
