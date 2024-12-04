@@ -15,4 +15,4 @@ const deleteMessage = async (message: EasyMessage) => {
     }
 };
 
-export {   EasyMessage, deleteMessage };
+export { EasyMessage, deleteMessage };

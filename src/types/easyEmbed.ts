@@ -10,24 +10,24 @@ type EmbedType = {
     timestamp?: null | string;
   };
   
-  class EmbedBuilder {
+  class EasyEmbed {
     private embed: EmbedType;
   
     constructor() {
       this.embed = {};
     }
   
-    setColour(colour: string): EmbedBuilder {
+    setColour(colour: string): EasyEmbed {
       this.embed.colour = colour;
       return this;
     }
   
-    setDescription(description: string): EmbedBuilder {
+    setDescription(description: string): EasyEmbed {
       this.embed.description = description;
       return this;
     }
 
-    addField(name: string, value: string): EmbedBuilder {
+    addField(name: string, value: string): EasyEmbed {
         if (!this.embed.fields) {
           this.embed.fields = '';
         }
@@ -35,33 +35,33 @@ type EmbedType = {
         return this;
       }
 
-    setFooter(footer: { text: string; iconURL?: string }): EmbedBuilder {
+    setFooter(footer: { text: string; iconURL?: string }): EasyEmbed {
         this.embed.footer = footer;
         return this;
       }
   
   
-    setIconUrl(icon_url: string): EmbedBuilder {
+    setIconUrl(icon_url: string): EasyEmbed {
       this.embed.icon_url = icon_url;
       return this;
     }
   
-    setMedia(media: string): EmbedBuilder {
+    setMedia(media: string): EasyEmbed {
       this.embed.media = media;
       return this;
     }
   
-    setTitle(title: string): EmbedBuilder {
+    setTitle(title: string): EasyEmbed {
       this.embed.title = title;
       return this;
     }
   
-    setUrl(url: string): EmbedBuilder {
+    setUrl(url: string): EasyEmbed {
       this.embed.url = url;
       return this;
     }
 
-    setTimestamp(timestamp: string): EmbedBuilder {
+    setTimestamp(timestamp: string): EasyEmbed {
         this.embed.timestamp = timestamp;
         return this;
       }
@@ -71,4 +71,4 @@ type EmbedType = {
     }
   }
   
-  export default EmbedBuilder;
+  export default EasyEmbed;

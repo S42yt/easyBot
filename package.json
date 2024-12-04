@@ -3,13 +3,12 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "ts-node src/index.ts",
         "prod": "STATE=\"prod\" npx ts-node src/index.ts",
         "build": "npx tsc"
     },
     "author": "S42",
-    "license": "ISC",
+    "license": "MIT",
     "description": "",
     "dependencies": {
         "canvas": "^2.11.2",

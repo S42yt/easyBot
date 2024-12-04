@@ -1,6 +1,6 @@
 import { Message } from 'revolt.js';
-import Logger from '../utils/logger';
-import EmbedBuilder from '../types/easyEmbed';
+import Logger from '../../utils/logger';
+import EmbedBuilder from '../../types/easyEmbed';
 import fs from 'fs';
 import path from 'path';
 
@@ -11,7 +11,7 @@ const helpCommand = {
         const logger = new Logger();
 
         try {
-            const commandFiles = fs.readdirSync(path.join(__dirname, '../commands')).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
+            const commandFiles = fs.readdirSync(path.join(__dirname, '../userCmd')).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
             const commandNames = commandFiles.map(file => file.replace(/\.(ts|js)$/, ''));
 
             const helpMessage = `Available Commands:\n${commandNames.map(name => `- ${name}`).join('\n')}`;

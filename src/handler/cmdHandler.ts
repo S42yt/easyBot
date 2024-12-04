@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { Client, Message } from 'revolt.js';
-import ClientEvent from '../types/easyClientEvent';
+import { deleteMessage, EasyMessage } from '../types/easyMessage';
 import Logger from '../utils/logger';
 import EmbedBuilder from '../types/easyEmbed';
 
@@ -30,11 +30,14 @@ class CommandHandler {
     }
 
     async registerCommands() {
-        const commandFiles = fs.readdirSync(path.join(__dirname, '../commands')).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
-        for (const file of commandFiles) {
-            const command = await import(`../commands/${file}`);
-            // Store commands in lowercase to ensure case-insensitivity
-            this.commands.set(command.default.name.toLowerCase(), command.default);
+        const commandFolders = ['userCmd', 'adminCmd'];
+        for (const folder of commandFolders) {
+            const commandFiles = fs.readdirSync(path.join(__dirname, '../commands', folder)).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
+            for (const file of commandFiles) {
+                const command = await import(`../commands/${folder}/${file}`);
+                // Store commands in lowercase to ensure case-insensitivity
+                this.commands.set(command.default.name.toLowerCase(), command.default);
+            }
         }
         this.logger.info('Commands registered successfully!', true);
     }
@@ -72,9 +75,9 @@ class CommandHandler {
             // Delete the user's message and the bot's reply after 3 seconds
             setTimeout(async () => {
                 try {
-                    CommandHandler.client.emit('messageDelete', message);
+                    await deleteMessage(message as EasyMessage);
                     if (replyMessage) {
-                        CommandHandler.client.emit('messageDelete', replyMessage);
+                        await deleteMessage(replyMessage as EasyMessage);
                     }
                 } catch (error: any) {
                     await this.logger.error(`Error deleting messages: ${error.message}`, true);

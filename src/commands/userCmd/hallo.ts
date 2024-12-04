@@ -1,5 +1,5 @@
 import { Message } from 'revolt.js';
-import Logger from '../utils/logger';
+import Logger from '../../utils/logger';
 
 const halloCommand = {
     name: 'hallo',
