@@ -23,15 +23,15 @@ const eventCommand = {
         }
 
         const [eventName] = args;
-        const s42UserId = process.env.S42_USER_ID;
+        const ownerUserId = process.env.OWNER_USER_ID;
 
-        if (!s42UserId) {
-            throw new Error('S42_USER_ID is not defined in the environment.');
+        if (!ownerUserId) {
+            throw new Error('OWNER_USER_ID is not defined in the environment.');
         }
 
         const eventEmbed = new EmbedBuilder()
             .setTitle('Event Triggered')
-            .setDescription(`Event: ${eventName}\nUser: S42`)
+            .setDescription(`Event: ${eventName}\nUser: ${ownerUserId}`)
             .setColour('#00FF00');
         const sentMessage = await message.reply({ embeds: [eventEmbed.build()] });
 
@@ -50,7 +50,7 @@ const eventCommand = {
             }
 
             if (event && event.default && typeof event.default.run === 'function') {
-                await event.default.run(message, s42UserId);
+                await event.default.run(message, ownerUserId);
                 await logger.log(`Executed 'startEvent' command for event: ${eventName} by ${message.author?.username}`, true);
             } else {
                 throw new Error(`Event file for ${eventName} is not properly structured.`);
