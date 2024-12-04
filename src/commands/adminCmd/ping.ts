@@ -3,6 +3,8 @@ import Logger from "../../utils/logger";
 import EmbedBuilder from "../../types/easyEmbed";
 import dotenv from 'dotenv';
 import { EasyPermManager } from "../../types/easyPermissons";
+import ErrorEmbed from "../../types/easyErrorEmbed";
+import CommandHandler from "../../handler/cmdHandler";
 
 dotenv.config();
 
@@ -26,10 +28,9 @@ const pingCommand = {
         permissionManager.allowRole('ping', adminRoleId);
 
         if (!message.author || !member || !permissionManager.hasPermission('ping', message.author.id, member)) {
-            const embed = new EmbedBuilder()
+            const embed = new ErrorEmbed()
                 .setTitle('Permission Denied')
                 .setDescription('You don\'t have permission to use this command.')
-                .setColour('#FF0000'); // Red color for error
 
             const replyMessage = await message.reply({ embeds: [embed.build()] });
 
@@ -69,11 +70,11 @@ const pingCommand = {
         } catch (error: any) {
             await logger.error(`Failed to execute 'ping' command: ${error.message}`, error, true);
 
-            const errorEmbed = new EmbedBuilder()
+            const errorEmbed = new ErrorEmbed()
                 .setTitle("Error")
                 .setDescription("Failed to calculate latency.")
-                .setColour("#fc0303");
 
+                
             const replyMessage = await message.reply({ embeds: [errorEmbed.build()] });
 
             // Delete the error message and the user's message after 3 seconds

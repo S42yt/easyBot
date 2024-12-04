@@ -4,6 +4,8 @@ import EmbedBuilder from '../../types/easyEmbed';
 import dotenv from 'dotenv';
 import { EasyMember, addRoleToMember } from '../../types/easyMember';
 import { EasyPermManager } from '../../types/easyPermissons';
+import ErrorEmbed from '../../types/easyErrorEmbed';
+import CommandHandler from '../../handler/cmdHandler';
 
 dotenv.config();
 
@@ -79,11 +81,11 @@ const standartRoleCommand = {
             }
 
             // Success Embed
-            const successEmbed = new EmbedBuilder()
-                .setTitle('Role Assignment Complete')
-                .setDescription(`The role has been assigned to ${assignedCount} online members in the server.`)
-                .setColour('#00FF00');
-            await message.reply({ embeds: [successEmbed.build()] });
+            const successEmbed = new ErrorEmbed()
+                .setTitle('Error')
+                .setDescription('Failed to retrieve commands.');
+
+            await CommandHandler.prototype.sendResponse(message, '', successEmbed, true); // Use sendResponse with isError set to true
 
         } catch (error) {
             // Handle errors and reply with an error message

@@ -5,6 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import { EasyPermManager } from '../../types/easyPermissons';
 import dotenv from 'dotenv';
+import ErrorEmbed from '../../types/easyErrorEmbed';
+import CommandHandler from '../../handler/cmdHandler';
 
 dotenv.config();
 
@@ -79,11 +81,11 @@ const eventCommand = {
         } catch (error: any) {
             await logger.error(`Failed to execute 'eventStart' command: ${error.message}`, error, true);
 
-            const errorEmbed = new EmbedBuilder()
+            const errorEmbed = new ErrorEmbed()
                 .setTitle('Error')
                 .setDescription('Failed to start the event.')
                 .setColour('#FF0000');
-            await message.reply({ embeds: [errorEmbed.build()] });
+            await CommandHandler.prototype.sendResponse(message, '', errorEmbed, true); // Use sendResponse with isError set to true
         }
     }
 };

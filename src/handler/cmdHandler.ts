@@ -4,6 +4,7 @@ import { Client, Message } from 'revolt.js';
 import { deleteMessage, EasyMessage } from '../types/easyMessage';
 import Logger from '../utils/logger';
 import EmbedBuilder from '../types/easyEmbed';
+import ErrorEmbed from '../types/easyErrorEmbed';
 
 class CommandHandler {
     public static client: Client;
@@ -54,51 +55,37 @@ class CommandHandler {
                 await this.logger.error(`Error executing command: ${error.message}`, true);
             }
         } else {
-            const embed = new EmbedBuilder()
+            const embed = new ErrorEmbed()
                 .setTitle('Command Not Found')
-                .setDescription('This Command doesn\'t exist')
-                .setColour('#00FF00'); // Green
+                .setDescription('This Command doesn\'t exist');
 
-            const replyMessage = await message.reply({ embeds: [embed.build()] });
+            await this.sendResponse(message, '', embed, true);
+        }
+    }
 
-            // Change color from green to yellow to red
-            setTimeout(async () => {
-                embed.setColour('#FFFF00'); // Yellow
-                await replyMessage?.edit({ embeds: [embed.build()] });
-            }, 1000);
+    public async sendResponse(message: Message, content: string, embed?: EmbedBuilder, isError: boolean = false) {
+        let replyMessage;
+        if (embed) {
+            replyMessage = await message.channel?.sendMessage({ embeds: [embed.build()] });
+        } else {
+            replyMessage = await message.channel?.sendMessage(content);
+        }
 
-            setTimeout(async () => {
-                embed.setColour('#FF0000'); // Red
-                await replyMessage?.edit({ embeds: [embed.build()] });
-            }, 2000);
-
-            // Delete the user's message and the bot's reply after 3 seconds
+        if (isError && replyMessage) {
+            // Delete the error message and the user's message after 3 seconds
             setTimeout(async () => {
                 try {
+                    await deleteMessage(replyMessage as EasyMessage);
                     await deleteMessage(message as EasyMessage);
-                    if (replyMessage) {
-                        await deleteMessage(replyMessage as EasyMessage);
-                    }
                 } catch (error: any) {
                     await this.logger.error(`Error deleting messages: ${error.message}`, true);
                 }
             }, 3000);
-
-            // Log the event
-            await this.logger.warn(`Command not found: ${commandName}`, true);
         }
     }
 
     private async registerRevoltCommands(commands: any[]) {
         // Implement the method to register commands in Revolt.js
-    }
-
-    private async sendResponse(message: Message, content: string, embed?: EmbedBuilder) {
-        if (embed) {
-            await message.channel?.sendMessage({ embeds: [embed.build()] });
-        } else {
-            await message.channel?.sendMessage(content);
-        }
     }
 }
 

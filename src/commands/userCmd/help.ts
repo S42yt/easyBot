@@ -1,8 +1,9 @@
 import { Message } from 'revolt.js';
 import Logger from '../../utils/logger';
-import EmbedBuilder from '../../types/easyEmbed';
 import fs from 'fs';
 import path from 'path';
+import CommandHandler from '../../handler/cmdHandler'; // Import the CommandHandler to use sendResponse
+import ErrorEmbed from '../../types/easyErrorEmbed';
 
 const helpCommand = {
     name: 'help',
@@ -21,12 +22,11 @@ const helpCommand = {
         } catch (error: any) {
             await logger.error(`Failed to execute 'help' command: ${error.message}`, error, true);
 
-            const errorEmbed = new EmbedBuilder()
+            const errorEmbed = new ErrorEmbed()
                 .setTitle('Error')
-                .setDescription('Failed to retrieve commands.')
-                .setColour('#FF0000');
+                .setDescription('Failed to retrieve commands.');
 
-            await message.reply({ embeds: [errorEmbed.build()] });
+            await CommandHandler.prototype.sendResponse(message, '', errorEmbed, true); // Use sendResponse with isError set to true
         }
     }
 };
