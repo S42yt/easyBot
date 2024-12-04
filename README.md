@@ -90,21 +90,6 @@ To Build the Project:
 npm run build
 ```
 
-
-## Usage
-
-Once the bot is running, you can use the following commands in your server:
-
-- **User Commands**
-  - `!help`: Displays a list of available commands.
-  - `!hallo`: Sends a welcome message.
-
-- **Admin Commands**
-  - `!eventStart <event>`: Starts a specified event.
-  - `!standartRole`: Assigns a standard role to all online members.
-  - `!ping`: Checks the bot's latency.
-  - `!teamHelp`: Displays a list of team commands.
-
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request with your changes.
