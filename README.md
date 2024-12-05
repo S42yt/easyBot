@@ -10,6 +10,11 @@ This project is developed for fun and is licensed under the MIT License.
 
 ## Features
 
+- **Utils**
+ - `Logger`: A better Console Logger used for the bot.
+ - `Message Logger`: A Message Logger that logs every message sent in the server. 
+
+
 - **User Commands**
   - `!help`: Displays a list of available commands.
   - `!hallo`: Sends a welcome message.
