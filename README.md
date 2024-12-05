@@ -42,11 +42,14 @@ This project is developed for fun and is licensed under the MIT License.
 
 ### Installation
 
+
 1. Clone the repository:
     ```sh
     git clone https://github.com/yourusername/easyBot.git
     cd easyBot
     ```
+
+    _(you also could download the release and use that **BUT** the releases are in **Javascript** not **Typescript**)_
 
 2. Install the dependencies:
     ```sh
@@ -59,24 +62,28 @@ This project is developed for fun and is licensed under the MIT License.
     ```
 
 4. Fill in the required values in the `.env` file:
-    ```env
-    #BOT RELATED
-    BOT_TOKEN = "your-bot-token"
+```env
+#BOT RELATED
+BOT_TOKEN = ""
 
-    #SERVER RELATED
-    SERVER_ID = "your-server-id"
 
-    #ROLES
-    JOIN_ROLE = "role-id-for-new-members"
-    ADMIN_ROLE = "admin-role-id"
-    MODERATOR_ROLE = "moderator-role-id"
+#SERVER RELATED
+SERVER_ID = ""
 
-    #CHANNELS
-    WELCOME_CHANNEL_ID = "welcome-channel-id"
+#ROLES
+JOIN_ROLE = ""
+ADMIN_ROLE = ""
+MODERATOR_ROLE = ""
 
-    #USER IDS
-    OWNER_USER_ID = "your-user-id"
-    ```
+#CHANNELS
+WELCOME_CHANNEL_ID = ""
+LOGGING_CHANNEL_ID = ""
+
+
+
+#USER IDS
+OWNER_USER_ID = ""
+```
 
 ### Running the Bot
 
