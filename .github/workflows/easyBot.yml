@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Correctly using the latest version
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3  # Upgraded to v3
+        uses: actions/setup-node@v3
         with:
           node-version: '14'
 
@@ -29,21 +29,34 @@ jobs:
           mkdir release
           cp -r ./dist/* ./release/  
           cd release
-          zip -r ../easyBot.zip .  
-          
+          zip -r ../easyBot.zip .
+
+      - name: Get latest release tag
+        id: get_latest_release
+        run: |
+          git fetch --tags
+          TAG=$(git tag --list "v*" --sort=-v:refname | head -n 1)
+          echo "Latest tag: $TAG"
+          if [ -z "$TAG" ]; then
+            NEW_TAG="v0.1"
+          else
+            NEW_TAG=$(echo $TAG | awk -F. '{printf "v%d.%d", $1, $2+1}')
+          fi
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1  # Version can stay at v1, but ensure it's working
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          tag_name: v${{ github.sha }}  # Using `github.sha` for more stable versioning
-          release_name: Release v${{ github.sha }}
+          tag_name: ${{ env.NEW_TAG }}
+          release_name: Release ${{ env.NEW_TAG }}
           draft: false
           prerelease: false
 
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1  # Version can stay at v1
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
