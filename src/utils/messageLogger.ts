@@ -9,7 +9,6 @@ dotenv.config();
 const logger = new Logger();
 const client = new Client();
 
-console.log('MessageLogger is ready.');
 
 client.on('messageCreate', async (message: Message) => {
     if (message.author?.bot) return; // Ignore bot messages
@@ -44,6 +43,14 @@ client.on('messageCreate', async (message: Message) => {
 
     // Send embed to log channel
     await logChannel.sendMessage({ embeds: [embed.build()] });
+
+    // Handle attachments
+    if (message.attachments && message.attachments.length > 0) {
+        for (const attachment of message.attachments) {
+            await logChannel.sendMessage({ content: attachment.url });
+            console.log(`[${new Date(message.createdAt).toLocaleString()}] ${message.author?.username || 'Unknown'} sent an image: ${attachment.url}`);
+        }
+    }
 });
 
 client.on('messageUpdate', async (newMessage: Message, oldMessage: HydratedMessage) => {
@@ -52,7 +59,7 @@ client.on('messageUpdate', async (newMessage: Message, oldMessage: HydratedMessa
     const logChannelId = process.env.LOGGING_CHANNEL_ID;
     if (!logChannelId) {
         throw new Error('LOGGING_CHANNEL_ID is not defined in the environment.');
-    } 
+    }
 
     if (newMessage.channelId === logChannelId) {
         return; // Ignore messages in the logging channel
@@ -80,11 +87,18 @@ client.on('messageUpdate', async (newMessage: Message, oldMessage: HydratedMessa
 
     // Send embed to log channel
     await logChannel.sendMessage({ embeds: [embed.build()] });
+
+    // Handle attachments
+    if (newMessage.attachments && newMessage.attachments.length > 0) {
+        for (const attachment of newMessage.attachments) {
+            await logChannel.sendMessage({ content: attachment.url });
+            console.log(`[${new Date(newMessage.createdAt).toLocaleString()}] ${newMessage.author?.username || 'Unknown'} sent an image: ${attachment.url}`);
+        }
+    }
 });
 
 client.on('messageDelete', async (message: HydratedMessage) => {
-    // Ignore bot messages or missing message data
-    if (!message.authorId) return;
+    if (!message.authorId) return; // Ignore bot messages or missing message data
 
     const logChannelId = process.env.LOGGING_CHANNEL_ID;
     if (!logChannelId) {
@@ -96,7 +110,6 @@ client.on('messageDelete', async (message: HydratedMessage) => {
         return; // Ignore messages in the logging channel
     }
 
-    // Fetch the log channel
     const logChannel = await client.channels.fetch(logChannelId);
     if (!logChannel) {
         console.error('Log channel not found');
@@ -131,6 +144,14 @@ client.on('messageDelete', async (message: HydratedMessage) => {
 
     // Send embed to log channel
     await logChannel.sendMessage({ embeds: [embed.build()] });
+
+    // Handle attachments
+    if (fullMessage.attachments && fullMessage.attachments.length > 0) {
+        for (const attachment of fullMessage.attachments) {
+            await logChannel.sendMessage({ content: attachment.url });
+            console.log(`[${currentTime.toLocaleString()}] ${fullMessage.authorId || 'Unknown'} deleted an image: ${attachment.url}`);
+        }
+    }
 });
 
 client.loginBot(process.env.BOT_TOKEN as string).catch((error) => {
