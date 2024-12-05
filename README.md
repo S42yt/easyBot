@@ -4,7 +4,9 @@
 
 ## Overview
 
-**easyBot** is a general-purpose bot built using [Revolt.js](https://github.com/revoltchat/revolt.js). It is designed to enhance your server with various features and commands. This project is developed for fun and is licensed under the MIT License.
+**easyBot** is a general-purpose bot built using [Revolt.js](https://github.com/revoltchat/revolt.js). It is designed to enhance your server with various features and commands.
+The only thing you need to configure is the .env!
+This project is developed for fun and is licensed under the MIT License.
 
 ## Features
 
