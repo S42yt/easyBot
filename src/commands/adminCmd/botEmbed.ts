@@ -74,7 +74,7 @@ const botEmbedCommand = {
         const embed = new EmbedBuilder()
             .setTitle(title)
             .setDescription(description)
-            .setFooter({ text: footerText, iconURL: footerIcon })
+            .setFooter(footerText, footerIcon)
             .setColour('#800080'); // Purple color for the embed
 
         try {
