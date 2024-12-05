@@ -42,11 +42,14 @@ This project is developed for fun and is licensed under the MIT License.
 
 ### Installation
 
+
 1. Clone the repository:
     ```sh
     git clone https://github.com/yourusername/easyBot.git
     cd easyBot
     ```
+
+    _(you also could download the release and use that **BUT** the releases are in **Javascript** not **Typescript**)_
 
 2. Install the dependencies:
     ```sh
