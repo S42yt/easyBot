@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Upgraded to v3
+        uses: actions/checkout@v3  # Correctly using the latest version
 
       - name: Set up Node.js
         uses: actions/setup-node@v3  # Upgraded to v3
@@ -25,21 +25,25 @@ jobs:
         run: npm run build
 
       - name: Zip codebase
-        run: zip -r easyBot.zip .
-
+        run: |
+          mkdir release
+          cp -r ./dist/* ./release/  
+          cd release
+          zip -r ../easyBot.zip .  
+          
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1  # Can stay as v1 if it works well
+        uses: actions/create-release@v1  # Version can stay at v1, but ensure it's working
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}  # Ensure versioning is correct
-          release_name: Release v${{ github.run_number }}
+          tag_name: v${{ github.sha }}  # Using `github.sha` for more stable versioning
+          release_name: Release v${{ github.sha }}
           draft: false
           prerelease: false
 
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1  # Can stay as v1
+        uses: actions/upload-release-asset@v1  # Version can stay at v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
