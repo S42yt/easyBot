@@ -35,7 +35,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1  # Version can stay at v1, but ensure it's working
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           tag_name: v${{ github.sha }}  # Using `github.sha` for more stable versioning
           release_name: Release v${{ github.sha }}
@@ -45,7 +45,7 @@ jobs:
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1  # Version can stay at v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./easyBot.zip
