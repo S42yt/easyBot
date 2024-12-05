@@ -6,7 +6,7 @@ import path from 'path';
 import { EasyPermManager } from '../../types/easyPermissons';
 import dotenv from 'dotenv';
 import ErrorEmbed from '../../types/easyErrorEmbed';
-import CommandHandler from '../../handler/cmdHandler';
+import CommandHandler from '../../handler/easyCmd';
 
 dotenv.config();
 

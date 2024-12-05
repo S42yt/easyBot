@@ -2,7 +2,7 @@ import { Message } from 'revolt.js';
 import Logger from '../../utils/logger';
 import EmbedBuilder from '../../types/easyEmbed';
 import ErrorEmbed from '../../types/easyErrorEmbed'; 
-import CommandHandler from '../../handler/cmdHandler'; 
+import CommandHandler from '../../handler/easyCmd'; 
 import { EasyPermManager } from '../../types/easyPermissons';
 
 import dotenv from 'dotenv';

@@ -1,6 +1,6 @@
 import { startClient } from './client';
-import CommandHandler from './handler/cmdHandler';
-import EventHandler from './handler/eventHandler';
+import CommandHandler from './handler/easyCmd';
+import EventHandler from './handler/easyEvent';
 import Logger from './utils/logger';
 
 const logger = new Logger();

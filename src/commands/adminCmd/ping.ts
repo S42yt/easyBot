@@ -4,7 +4,7 @@ import EmbedBuilder from "../../types/easyEmbed";
 import dotenv from 'dotenv';
 import { EasyPermManager } from "../../types/easyPermissons";
 import ErrorEmbed from "../../types/easyErrorEmbed";
-import CommandHandler from "../../handler/cmdHandler";
+import CommandHandler from "../../handler/easyCmd";
 
 dotenv.config();
 

@@ -2,7 +2,7 @@ import { Message } from 'revolt.js';
 import Logger from '../../utils/logger';
 import fs from 'fs';
 import path from 'path';
-import CommandHandler from '../../handler/cmdHandler'; // Import the CommandHandler to use sendResponse
+import CommandHandler from '../../handler/easyCmd'; // Import the CommandHandler to use sendResponse
 import ErrorEmbed from '../../types/easyErrorEmbed';
 
 const helpCommand = {
