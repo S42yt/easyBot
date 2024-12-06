@@ -1,6 +1,6 @@
 import { startClient } from './client';
 import CommandHandler from './handler/easyCmd';
-import EventHandler from './handler/eventHandler';
+import EventHandler from './handler/easyEvents';
 import Logger from './utils/logger';
 import { Client } from 'revolt.js';
 import './utils/messageLogger'; 

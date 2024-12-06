@@ -57,7 +57,8 @@ class CommandHandler {
         } else {
             const embed = new ErrorEmbed()
                 .setTitle('Command Not Found')
-                .setDescription('This Command doesn\'t exist');
+                .setDescription('This Command doesn\'t exist')
+                .setColour('#00FF00'); // Green color for the embed
 
             await this.sendResponse(message, '', embed, true);
         }
@@ -66,13 +67,35 @@ class CommandHandler {
     public async sendResponse(message: Message, content: string, embed?: EmbedBuilder, isError: boolean = false) {
         let replyMessage;
         if (embed) {
-            replyMessage = await message.channel?.sendMessage({ embeds: [embed.build()] });
+            replyMessage = await message.reply({ embeds: [embed.build()] });
         } else {
-            replyMessage = await message.channel?.sendMessage(content);
+            replyMessage = await message.reply(content);
         }
 
         if (isError && replyMessage) {
-            // Delete the error message and the user's message after 3 seconds
+            // Change the embed color to yellow after 3 seconds, then to red after another 3 seconds, then delete both messages
+            setTimeout(async () => {
+                try {
+                    if (embed) {
+                        embed.setColour('#FFFF00'); // Yellow color for the embed
+                        await replyMessage.edit({ embeds: [embed.build()] });
+                    }
+                } catch (error: any) {
+                    await this.logger.error(`Error updating embed color to yellow: ${error.message}`, true);
+                }
+            }, 3000);
+
+            setTimeout(async () => {
+                try {
+                    if (embed) {
+                        embed.setColour('#FF0000'); // Red color for the embed
+                        await replyMessage.edit({ embeds: [embed.build()] });
+                    }
+                } catch (error: any) {
+                    await this.logger.error(`Error updating embed color to red: ${error.message}`, true);
+                }
+            }, 6000);
+
             setTimeout(async () => {
                 try {
                     await deleteMessage(replyMessage as EasyMessage);
@@ -80,7 +103,7 @@ class CommandHandler {
                 } catch (error: any) {
                     await this.logger.error(`Error deleting messages: ${error.message}`, true);
                 }
-            }, 3000);
+            }, 9000);
         }
     }
 

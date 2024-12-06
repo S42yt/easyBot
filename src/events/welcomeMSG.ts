@@ -2,7 +2,7 @@ import { Client, User } from 'revolt.js';
 import { ClientEvent } from '../types/easyClientEvent';
 import EmbedBuilder from '../types/easyEmbed';
 import Logger from '../utils/logger';
-import EventHandler from '../handler/eventHandler';
+import EventHandler from '../handler/easyEvents';
 import dotenv from 'dotenv';
 
 dotenv.config();
