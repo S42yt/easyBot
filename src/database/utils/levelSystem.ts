@@ -1,26 +1,9 @@
-import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const uri = process.env.MONGODB_URI;
-if (!uri) {
-    throw new Error('MONGODB_URI is not defined');
-}
-const client = new MongoClient(uri);
-const dbName = 'easyBotDB';
-const collectionName = 'userLevels';
-
-interface UserLevel {
-    userId: string;
-    experience: number;
-    level: number;
-}
+import { connectToDatabase } from '../mongodb';
+import User from '../models/user';
 
 async function connectToCollection() {
-    await client.connect();
-    const db = client.db(dbName);
-    return db.collection<UserLevel>(collectionName);
+    const db = await connectToDatabase();
+    return db.collection<User>('users');
 }
 
 export async function addExperience(userId: string, experience: number) {
@@ -28,7 +11,16 @@ export async function addExperience(userId: string, experience: number) {
     const user = await collection.findOne({ userId });
 
     if (!user) {
-        await collection.insertOne({ userId, experience, level: 1 });
+        const newUser: User = {
+            userId,
+            username: '', // You should set this value appropriately
+            discriminator: '', // You should set this value appropriately
+            avatar: '', // You should set this value appropriately
+            createdAt: new Date(),
+            experience,
+            level: calculateLevel(experience)
+        };
+        await collection.insertOne(newUser);
     } else {
         const newExperience = user.experience + experience;
         const newLevel = calculateLevel(newExperience);
@@ -36,12 +28,12 @@ export async function addExperience(userId: string, experience: number) {
     }
 }
 
-export async function getUserLevel(userId: string): Promise<UserLevel | null> {
+export async function getUserLevel(userId: string): Promise<User | null> {
     const collection = await connectToCollection();
     return collection.findOne({ userId });
 }
 
-export async function getTopUsers(page: number, pageSize: number = 10): Promise<UserLevel[]> {
+export async function getTopUsers(page: number, pageSize: number = 10): Promise<User[]> {
     const collection = await connectToCollection();
     return collection.find().sort({ experience: -1 }).skip((page - 1) * pageSize).limit(pageSize).toArray();
 }
@@ -58,5 +50,3 @@ function calculateLevel(experience: number): number {
 
     return level;
 }
-
-export default connectToCollection;

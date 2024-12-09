@@ -4,7 +4,7 @@ import EventHandler from './handler/easyEvents';
 import Logger from './utils/logger';
 import { Client } from 'revolt.js';
 import './utils/messageLogger'; 
-import { connectToDatabase } from './cache/mongodb';
+import { connectToDatabase } from './database/mongodb';
 
 const logger = new Logger();
 
@@ -21,6 +21,6 @@ process.on("uncaughtException", function (err) {
     logger.error(text);
 });
 
-
-connectToDatabase()
-startClient();
+connectToDatabase().then(() => {
+    startClient();
+});

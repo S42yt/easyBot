@@ -1,6 +1,6 @@
 import { Message } from 'revolt.js';
 import Logger from '../../utils/logger';
-import { getTopUsers } from '../../utils/levelSystem';
+import { getTopUsers } from '../../database/utils/levelSystem';
 import EmbedBuilder from '../../types/easyEmbed';
 
 const topCommand = {
@@ -18,7 +18,7 @@ const topCommand = {
 
             const embed = new EmbedBuilder()
                 .setTitle(`Top Users - Page ${page}`)
-                .setDescription(topUsers.map((user, index) => `${index + 1}. ${user.userId} - Level: ${user.level}, XP: ${user.experience}`).join('\n'))
+                .setDescription(topUsers.map((user, index) => `${index + 1}. ${user.username} - Level: ${user.level}, XP: ${user.experience}`).join('\n'))
                 .setColour('#00FF00');
 
             await message.reply({ embeds: [embed.build()] });
@@ -28,8 +28,20 @@ const topCommand = {
                 .setDescription(error.message)
                 .setColour('#FF0000');
 
-            await message.reply({ embeds: [errorEmbed.build()] });
-            await logger.error(`Failed to execute 'top' command: ${error.message}`, error, true);
+            const replyMessage = await message.reply({ embeds: [errorEmbed.build()] });
+
+            setTimeout(async () => {
+                try {
+                    if (replyMessage) {
+                        await replyMessage.delete();
+                    }
+                    if (message) {
+                        await message.delete();
+                    }
+                } catch (error: any) {
+                    await logger.error(`Error deleting messages: ${error.message}`, true);
+                }
+            }, 3000);
         }
     }
 };
