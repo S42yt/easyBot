@@ -1,24 +1,28 @@
-import { Client, Message, ServerMember } from 'revolt.js';
+import { Client, Message } from 'revolt.js';
 import { addExperience } from '../database/utils/levelSystem';
 import Logger from '../utils/logger';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const logger = new Logger();
 const client = new Client();
-const voiceChannelTimers = new Map<string, NodeJS.Timeout>();
 
-// Handle awarding XP for messages
 client.on('messageCreate', async (message: Message) => {
-    if (!message.author || message.author.bot) return; // Ignore bot messages
+    if (message.author?.bot) return; // Ignore bot messages
 
-    const xp = 10; // XP awarded for sending a message
+    const userId = message.author?.id;
+    if (!userId) {
+        logger.error('User ID not found for the message author.');
+        return;
+    }
+
     try {
-        await addExperience(message.author.id, xp);
-        logger.info(`Awarded ${xp} XP to ${message.author.username} for sending a message`, true);
-    } catch (error: any) {
-        logger.error(`Failed to award XP: ${error.message}`, error, true);
+        await addExperience(userId, 5); // Add 5 XP to the user
+        logger.info(`Added 5 XP to user ${message.author?.username}`, true);
+    } catch (error) {
+        if (error instanceof Error) {
+            logger.error(`Failed to add XP to user ${message.author?.username}: ${error.message}`, error, true);
+        } else {
+            logger.error(`Failed to add XP to user ${message.author?.username}: ${String(error)}`, error, true);
+        }
     }
 });
 

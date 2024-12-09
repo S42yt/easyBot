@@ -27,10 +27,12 @@ export async function addExperience(userId: string, experience: number) {
             level: calculateLevel(experience)
         };
         await collection.insertOne(newUser);
+        logger.info(`Created new user with ID ${userId} and added ${experience} XP.`);
     } else {
         const newExperience = user.experience + experience;
         const newLevel = calculateLevel(newExperience);
         await collection.updateOne({ userId }, { $set: { experience: newExperience, level: newLevel } });
+        logger.info(`Updated user with ID ${userId}: added ${experience} XP, new level is ${newLevel}.`);
 
         if (newLevel % 20 === 0 && newLevel <= 100) {
             const roleEnvVar = `LEVEL_${newLevel}_ROLE`;

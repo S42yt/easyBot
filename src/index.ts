@@ -6,7 +6,7 @@ import { Client } from 'revolt.js';
 import './utils/messageLogger';
 import { connectToDatabase } from './database/mongodb';
 import './database/utils/levelSystem';
-import './handler/easyXPHandler'; 
+import './handler/easyXPHandler';
 
 const logger = new Logger();
 
