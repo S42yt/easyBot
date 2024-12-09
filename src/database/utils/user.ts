@@ -1,5 +1,5 @@
-import { connectToDatabase } from '../mongodb';
 import User from '../models/user';
+import { connectToDatabase } from '../mongodb';
 
 async function saveUserData(user: User) {
     const db = await connectToDatabase();
@@ -8,7 +8,16 @@ async function saveUserData(user: User) {
     try {
         await collection.updateOne(
             { userId: user.userId },
-            { $set: user },
+            {
+                $set: {
+                    username: user.username,
+                    discriminator: user.discriminator,
+                    avatar: user.avatar,
+                    createdAt: user.createdAt,
+                    experience: user.experience,
+                    level: user.level
+                }
+            },
             { upsert: true }
         );
         console.log(`User data for ${user.username} saved successfully.`);

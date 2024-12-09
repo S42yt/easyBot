@@ -6,43 +6,41 @@ import EmbedBuilder from '../../types/easyEmbed';
 const levelCommand = {
     name: 'level',
     reply: true,
-    execute: async (message: Message, args: string[]) => {
+    execute: async (message: Message) => {
         const logger = new Logger();
-        const userId = args[0] || message.author?.id || '';
 
         try {
-            const userLevel = await getUserLevel(userId);
-            if (!userLevel) {
-                throw new Error('User not found');
+            const userId = message.author?.id;
+            if (!userId) {
+                throw new Error('User ID not found.');
             }
 
+            const user = await getUserLevel(userId);
+            if (!user) {
+                throw new Error('User not found in the database.');
+            }
+
+            const currentLevel = user.level;
+            const currentXP = user.experience;
+            const nextLevelXP = (currentLevel + 1) * 20; // Example calculation for next level XP
+            const xpNeeded = nextLevelXP - currentXP;
+
             const embed = new EmbedBuilder()
-                .setTitle(`Level for ${userLevel.username}`)
-                .setDescription(`Level: ${userLevel.level}\nExperience: ${userLevel.experience}`)
-                .setColour('#00FF00')
-                .setIconUrl(userLevel.avatar);
+                .setTitle('Your Level Information')
+                .setDescription(`**Level:** ${currentLevel}\n**Current XP:** ${currentXP}\n**XP Needed for Next Level:** ${xpNeeded}`)
+                .setColour('#00FF00'); // Green color for the embed
 
             await message.reply({ embeds: [embed.build()] });
+            await logger.log(`Executed 'level' command by ${message.author?.username}`, true);
         } catch (error: any) {
+            await logger.error(`Failed to execute 'level' command: ${error.message}`, error, true);
+
             const errorEmbed = new EmbedBuilder()
                 .setTitle('Error')
-                .setDescription(error.message)
-                .setColour('#FF0000');
+                .setDescription('Failed to retrieve level information.')
+                .setColour('#FF0000'); // Red color for error
 
-            const replyMessage = await message.reply({ embeds: [errorEmbed.build()] });
-
-            setTimeout(async () => {
-                try {
-                    if (replyMessage) {
-                        await replyMessage.delete();
-                    }
-                    if (message) {
-                        await message.delete();
-                    }
-                } catch (error: any) {
-                    await logger.error(`Error deleting messages: ${error.message}`, true);
-                }
-            }, 3000);
+            await message.reply({ embeds: [errorEmbed.build()] });
         }
     }
 };

@@ -2,9 +2,8 @@ import { Client } from "revolt.js";
 import JoinRole from "./events/joinrole";
 import dotenv from "dotenv";
 import { saveUserData } from './database/utils/user';
+import { getUserLevel, addExperience } from './database/utils/levelSystem';
 import Logger from './utils/logger';
-import CommandHandler from './handler/easyCmd';
-import EventHandler from './handler/easyEvents';
 
 dotenv.config();
 
@@ -17,6 +16,8 @@ if (!process.env.SERVER_ID) {
 }
 
 let client = new Client();
+
+const logger = new Logger();
 
 client.on("ready", async () => {
   console.info(`Logged in as ${client.user?.username}!`);
@@ -37,17 +38,32 @@ client.on("ready", async () => {
       continue;
     }
 
-    const user = {
-      userId: member.user.id,
-      username: member.user.username,
-      discriminator: member.user.discriminator,
-      avatar: typeof member.user.avatar === 'string' ? member.user.avatar : '',
-      createdAt: new Date(member.user.createdAt),
-      experience: 0, // Initialize experience
-      level: 0 // Initialize level
-    };
+    const user = await getUserLevel(member.user.id);
 
-    await saveUserData(user);
+    if (!user) {
+      const newUser = {
+        userId: member.user.id,
+        username: member.user.username,
+        discriminator: member.user.discriminator,
+        avatar: typeof member.user.avatar === 'string' ? member.user.avatar : '',
+        createdAt: new Date(member.user.createdAt),
+        experience: 0,
+        level: 1
+      };
+
+      await addExperience(newUser.userId, 0); // Initialize the user in the database
+      await saveUserData(newUser); // Save the new user data
+      logger.info(`Initialized new user ${newUser.username} with ID ${newUser.userId}`, true);
+    } else {
+      // Update the user data with the latest information
+      user.username = member.user.username;
+      user.discriminator = member.user.discriminator;
+      user.avatar = typeof member.user.avatar === 'string' ? member.user.avatar : '';
+      user.createdAt = new Date(member.user.createdAt);
+
+      await saveUserData(user); // Save the updated user data
+      logger.info(`Retrieved existing user ${user.username} with ID ${user.userId}`, true);
+    }
   }
 
   console.log('All members have been registered.');
