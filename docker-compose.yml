@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  easybot:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - SERVER_ID=${SERVER_ID}
+      - JOIN_ROLE=${JOIN_ROLE}
+      - ADMIN_ROLE=${ADMIN_ROLE}
+      - MODERATOR_ROLE=${MODERATOR_ROLE}
+      - WELCOME_CHANNEL_ID=${WELCOME_CHANNEL_ID}
+      - LOGGING_CHANNEL_ID=${LOGGING_CHANNEL_ID}
+      - OWNER_USER_ID=${OWNER_USER_ID}
+      - MONGODB_URI=${MONGODB_URI}
+    volumes:
+      - .:/app
+    command: npm run dev
