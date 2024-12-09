@@ -22,21 +22,29 @@ client.on("ready", async () => {
   console.info(`Logged in as ${client.user?.username}!`);
 
   const serverId = process.env.SERVER_ID;
+  if (!serverId) {
+    throw new Error("SERVER_ID is not defined in the .env file");
+  }
   const server = client.servers.get(serverId);
   if (!server) {
     throw new Error(`Server with ID ${serverId} not found.`);
   }
 
-  const members = await server.fetchMembers();
+  const { members } = await server.fetchMembers();
   for (const member of members) {
+    if (!member.user) {
+      console.warn(`Member ${member.id} does not have a user object.`);
+      continue;
+    }
+
     const user = {
       userId: member.user.id,
       username: member.user.username,
       discriminator: member.user.discriminator,
-      avatar: member.user.avatar,
+      avatar: typeof member.user.avatar === 'string' ? member.user.avatar : '',
       createdAt: new Date(member.user.createdAt),
       experience: 0, // Initialize experience
-      level: 1 // Initialize level
+      level: 0 // Initialize level
     };
 
     await saveUserData(user);

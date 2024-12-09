@@ -8,7 +8,7 @@ const levelCommand = {
     reply: true,
     execute: async (message: Message, args: string[]) => {
         const logger = new Logger();
-        const userId = args[0] || message.author?.id;
+        const userId = args[0] || message.author?.id || '';
 
         try {
             const userLevel = await getUserLevel(userId);

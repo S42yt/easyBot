@@ -20,11 +20,15 @@ class JoinRole implements ClientEvent {
                 throw new Error('JOIN_ROLE is not defined in the environment.');
             }
 
+            if (!member.user) {
+                throw new Error('Member user is undefined.');
+            }
+
             const user = {
                 userId: member.user.id,
                 username: member.user.username,
                 discriminator: member.user.discriminator,
-                avatar: member.user.avatar,
+                avatar: typeof member.user.avatar === 'string' ? member.user.avatar : '',
                 createdAt: new Date(member.user.createdAt),
                 experience: 0,
                 level: 1
@@ -33,7 +37,10 @@ class JoinRole implements ClientEvent {
             await saveUserData(user);
 
             if (!member.roles.includes(roleId)) {
-                await member.addRole(roleId);
+                // Use the edit method to add the role
+                await member.edit({
+                    roles: [...member.roles, roleId]
+                });
                 logger.info(`Assigned role ${roleId} to user ${member.displayName}`, true);
             } else {
                 logger.warn(`User ${member.displayName} already has the role ${roleId}`, true);
