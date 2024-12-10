@@ -5,6 +5,8 @@ import EmbedBuilder from "../types/easyEmbed";
 import { EasyMessage } from "../types/easyMessage";
 import Logger from '../utils/logger';
 import dotenv from 'dotenv';
+import UserLeave from '../events/userLeave';
+
 
 dotenv.config();
 
@@ -47,6 +49,7 @@ class EventHandler {
             }
         }
 
+        
         try {
             await this.logger.info('Events registered successfully.', true);
         } catch (error: any) {

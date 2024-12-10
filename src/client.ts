@@ -1,5 +1,6 @@
-import { Client } from "revolt.js";
+import { Client, ServerMember} from "revolt.js";
 import JoinRole from "./events/joinrole";
+import userLeave from "./events/userLeave";
 import dotenv from "dotenv";
 import { saveUserData } from './database/utils/user';
 import { getUserLevel, addExperience } from './database/utils/levelSystem';
@@ -51,17 +52,16 @@ client.on("ready", async () => {
         level: 1
       };
 
-      await addExperience(newUser.userId, 0); // Initialize the user in the database
-      await saveUserData(newUser); // Save the new user data
+      await addExperience(newUser.userId, 0); 
+      await saveUserData(newUser); 
       logger.info(`Initialized new user ${newUser.username} with ID ${newUser.userId}`, true);
     } else {
-      // Update the user data with the latest information
       user.username = member.user.username;
       user.discriminator = member.user.discriminator;
       user.avatar = typeof member.user.avatar === 'string' ? member.user.avatar : '';
       user.createdAt = new Date(member.user.createdAt);
 
-      await saveUserData(user); // Save the updated user data
+      await saveUserData(user); 
       logger.info(`Retrieved existing user ${user.username} with ID ${user.userId}`, true);
     }
   }
@@ -71,6 +71,10 @@ client.on("ready", async () => {
 
 client.on('serverMemberJoin', (member) => {
   JoinRole.run(client, member);
+});
+
+client.on('serverMemberLeave', (member) => {
+  userLeave.run(client, member as unknown as ServerMember);
 });
 
 export function startClient() {
