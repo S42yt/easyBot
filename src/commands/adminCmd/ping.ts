@@ -4,6 +4,7 @@ import EmbedBuilder from "../../types/easyEmbed";
 import dotenv from 'dotenv';
 import { EasyPermManager } from "../../types/easyPermissons";
 import ErrorEmbed from "../../types/easyErrorEmbed";
+import { connectToDatabase } from '../../database/mongodb';
 
 dotenv.config();
 
@@ -57,11 +58,21 @@ const pingCommand = {
                 .setColour("#fcdb03");
 
             const sentMessage = await message.reply({ embeds: [embed.build()] });
-            const latency = Date.now() - startTime;
+
+            // Measure bot latency
+            const botLatency = Date.now() - startTime;
+
+            // Measure database response time
+            const dbStartTime = Date.now();
+            const db = await connectToDatabase();
+            await db.command({ ping: 1 });
+            const dbLatency = Date.now() - dbStartTime;
+
+            const totalLatency = botLatency + dbLatency;
 
             const updatedEmbed = new EmbedBuilder()
                 .setTitle("Pong!")
-                .setDescription(`Latency: ${latency}ms`)
+                .setDescription(`Bot Latency: ${botLatency}ms\nDatabase Latency: ${dbLatency}ms\nTotal Latency: ${totalLatency}ms`)
                 .setColour("#03fc1c");
 
             await sentMessage?.edit({ embeds: [updatedEmbed.build()] });
@@ -73,7 +84,6 @@ const pingCommand = {
                 .setTitle("Error")
                 .setDescription("Failed to calculate latency.")
 
-                
             const replyMessage = await message.reply({ embeds: [errorEmbed.build()] });
 
             // Delete the error message and the user's message after 3 seconds

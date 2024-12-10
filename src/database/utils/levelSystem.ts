@@ -1,5 +1,4 @@
 import { connectToDatabase } from '../mongodb';
-import { ServerMember } from 'revolt.js';
 import User from '../models/user';
 import dotenv from 'dotenv';
 import Logger from '../../utils/logger';
@@ -29,9 +28,24 @@ export async function addExperience(userId: string, experience: number) {
         await collection.insertOne(newUser);
         logger.info(`Created new user with ID ${userId} and added ${experience} XP.`);
     } else {
-        const newExperience = user.experience + experience;
+        const newExperience = (user.experience || 0) + experience; // Ensure experience is always a number
         const newLevel = calculateLevel(newExperience);
-        await collection.updateOne({ userId }, { $set: { experience: newExperience, level: newLevel } });
+        
+        const updateResult = await collection.updateOne(
+            { userId },
+            { 
+                $set: { 
+                    experience: newExperience, 
+                    level: newLevel 
+                } 
+            }
+        );
+
+        if (updateResult.matchedCount === 0) {
+            logger.error(`Failed to update user with ID ${userId}: user not found.`);
+            return;
+        }
+        
         logger.info(`Updated user with ID ${userId}: added ${experience} XP, new level is ${newLevel}.`);
 
         if (newLevel % 20 === 0 && newLevel <= 100) {
@@ -39,7 +53,7 @@ export async function addExperience(userId: string, experience: number) {
             const roleId = process.env[roleEnvVar];
             if (roleId) {
                 await assignRole(userId, roleId);
-                logger.info(`Assigned role ${roleId} to user ${userId} for reaching level ${newLevel}`, true);
+                logger.info(`Assigned role ${roleId} to user ${userId} for reaching level ${newLevel}`);
             }
         }
     }
