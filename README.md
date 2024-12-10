@@ -1,7 +1,7 @@
 # easyBot
 
 <p align="center">
-  <img src="assets/images/easyBot-Alpha.png" alt="easyBot Logo" width="200" height="200" style="border-radius: 15px;">
+  <img src="assets/images/easyBot-Alpha.png" alt="easyBot Logo" width="200" height="200" style="border-radius: 20px;">
 </p>
 
 ## Overview
