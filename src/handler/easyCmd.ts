@@ -36,7 +36,6 @@ class CommandHandler {
             const commandFiles = fs.readdirSync(path.join(__dirname, '../commands', folder)).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
             for (const file of commandFiles) {
                 const command = await import(`../commands/${folder}/${file}`);
-                // Store commands in lowercase to ensure case-insensitivity
                 this.commands.set(command.default.name.toLowerCase(), command.default);
             }
         }
@@ -51,6 +50,21 @@ class CommandHandler {
             const command = this.commands.get(commandName);
             try {
                 await command.execute(message, args);
+
+                // Log the command execution in the logs channel
+                const logChannelId = process.env.LOGGING_CHANNEL_ID;
+                if (logChannelId) {
+                    const logChannel = await CommandHandler.client.channels.fetch(logChannelId);
+                    if (logChannel) {
+                        const embed = new EmbedBuilder()
+                            .setTitle('Command Executed')
+                            .setDescription(`**Command:** ${commandName}\n**User:** <@${message.author?.id}>\n**Channel:** <#${message.channelId}>\n**Arguments:** ${args.join(' ')}`)
+                            .setColour('#00FF00') // Green color for the embed
+                            .setTimestamp(new Date().toISOString());
+
+                        await logChannel.sendMessage({ embeds: [embed.build()] });
+                    }
+                }
             } catch (error: any) {
                 await this.logger.error(`Error executing command: ${error.message}`, true);
             }
@@ -72,7 +86,6 @@ class CommandHandler {
         }
 
         if (isError && replyMessage) {
-            // Delete the error message and the user's message after 3 seconds
             setTimeout(async () => {
                 try {
                     await deleteMessage(replyMessage as EasyMessage);
@@ -85,7 +98,6 @@ class CommandHandler {
     }
 
     private async registerRevoltCommands(commands: any[]) {
-        // Implement the method to register commands in Revolt.js
     }
 }
 

@@ -76,6 +76,15 @@ class EasyEmbed {
   build(): any {
       return this.embed;
   }
+
+  toJSON() {
+      return {
+          color: this.embed.colour,
+          title: this.embed.title,
+          description: this.embed.description,
+          media: this.embed.media,
+      };
+  }
 }
 
 export default EasyEmbed;

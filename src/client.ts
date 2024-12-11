@@ -1,5 +1,6 @@
 import { Client, ServerMember} from "revolt.js";
 import JoinRole from "./events/joinrole";
+import updateMemberCountChannel from "./events/channelUpdate";
 import userLeave from "./events/userLeave";
 import dotenv from "dotenv";
 import { saveUserData } from './database/utils/user';
@@ -76,6 +77,8 @@ client.on('serverMemberJoin', (member) => {
 client.on('serverMemberLeave', (member) => {
   userLeave.run(client, member as unknown as ServerMember);
 });
+
+updateMemberCountChannel(client);
 
 export function startClient() {
   client.loginBot(process.env.BOT_TOKEN as string).catch((error) => {
