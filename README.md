@@ -21,6 +21,7 @@ This project is developed for fun and is licensed under the MIT License.
   - `!hallo`: Sends a welcome message.
   - `!level`: Displays your current level and experience.
   - `!top`: Displays the top users by level and experience.
+  - `userCountChannel`: Creates a voice channel that displays the current member count of the server.
 
 - **🔧 Admin/Moderator Commands**
   - `!ban <username>`: Bans a user from the server.
