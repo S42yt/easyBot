@@ -60,37 +60,57 @@ const userCountChannelCommand = {
                 throw new Error('Server or channel not found.');
             }
 
-            // Fetch member count
             const count = await memberCounter.getMemberCount(message.server);
-            const channelName = `Members: ${count}`;
+            const channelName = `👤•Members: ${count}`;
 
-            const newChannel = await message.server.createChannel({
-                name: channelName,
-                type: 'Voice',
-            });
+            try {
+                const newChannel = await message.server.createChannel({
+                    name: channelName,
+                    type: 'Voice',
+                });
 
-            const channelPermManager = new EasyChannelPermManager();
-            channelPermManager.addPermission('@everyone', [], ['VoiceConnect']);
+                const successEmbed = new EmbedBuilder()
+                    .setTitle('Channel Created')
+                    .setDescription(`Channel created: ${newChannel.name}`)
+                    .setColour('#00FF00'); // Green color for success
 
+                await message.reply({ embeds: [successEmbed.build()] });
+                await logger.log(`Created channel ${newChannel.name} with member count ${count}`, true);
 
-            await newChannel.setPermissions(channelPermManager.getPermissions().map(perm => perm.toString()).join(','), { allow: 0, deny: 0 });
+                const clientInstance = new Client();
+                clientInstance.on('serverMemberJoin', async (member: ServerMember) => {
+                    if (member.server && member.server.id === message.server?.id) {
+                        const newCount = await memberCounter.getMemberCount(message.server!);
+                        await newChannel.edit({ name: `👤•Members: ${newCount}` });
+                        await logger.log(`Updated channel name to ${newChannel.name} with new member count ${newCount}`, true);
+                    }
+                });
+            } catch (error: any) {
+                if (error.response?.status !== 422) {
+                    console.error(`Error: ${error.message}`, error.stack);
+                    await logger.error(`Failed to create user count channel: ${error.message}`, true);
 
-            const successEmbed = new EmbedBuilder()
-                .setTitle('Channel Created')
-                .setDescription(`Channel created: ${newChannel.name}`)
-                .setColour('#00FF00'); // Green color for success
+                    const errorEmbed = new ErrorEmbed()
+                        .setTitle('Error')
+                        .setDescription(`Failed to create user count channel: ${error.message}`)
+                        .setColour('#FF0000'); // Red color for error
 
-            await message.reply({ embeds: [successEmbed.build()] });
-            await logger.log(`Created channel ${newChannel.name} with member count ${count}`, true);
-
-            const clientInstance = new Client();
-            clientInstance.on('serverMemberJoin', async (member: ServerMember) => {
-                if (member.server && member.server.id === message.server?.id) {
-                    const newCount = await memberCounter.getMemberCount(message.server!);
-                    await newChannel.edit({ name: `Members: ${newCount}` });
-                    await logger.log(`Updated channel name to ${newChannel.name} with new member count ${newCount}`, true);
+                    const replyMessage = await message.reply({ embeds: [errorEmbed.build()] });
+                    setTimeout(async () => {
+                        try {
+                            if (replyMessage) {
+                                await replyMessage.delete();
+                            }
+                            if (message) {
+                                await message.delete();
+                            }
+                        } catch (deleteError: any) {
+                            console.error(`Error deleting messages: ${deleteError.message}`, deleteError.stack);
+                            await logger.error(`Error deleting messages: ${deleteError.message}`, true);
+                        }
+                    }, 3000);
                 }
-            });
+            }
         } catch (error: any) {
             logger.error(`Error: ${error.message}`, error.stack);
             await logger.error(`Failed to create user count channel: ${error.message}`, true);
@@ -117,5 +137,18 @@ const userCountChannelCommand = {
         }
     }
 };
+
+async function retry(fn: () => Promise<any>, retries: number, delay: number): Promise<any> {
+    try {
+        return await fn();
+    } catch (error: any) {
+        if (retries > 0 && error.response?.status === 429) {
+            await new Promise(res => setTimeout(res, delay));
+            return retry(fn, retries - 1, delay * 2);
+        } else {
+            throw error;
+        }
+    }
+}
 
 export default userCountChannelCommand;

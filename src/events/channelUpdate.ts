@@ -16,9 +16,9 @@ const updateMemberCountChannel = async (client: Client) => {
                 throw new Error('Server is undefined');
             }
             const count = await memberCounter.getMemberCount(server);
-            const channelName = `Members: ${count}`;
+            const channelName = `👤•Members: ${count}`;
 
-            const userCountChannel: Channel | undefined = server.channels.find((channel: Channel) => channel.name.startsWith('Members:'));
+            const userCountChannel: Channel | undefined = server.channels.find((channel: Channel) => channel.name.startsWith('👤•'));
             if (userCountChannel) {
                 await userCountChannel.edit({ name: channelName });
                 await logger.info(`Updated channel ${userCountChannel.name} to ${channelName} after member joined`, true);
@@ -38,11 +38,11 @@ const updateMemberCountChannel = async (client: Client) => {
             
             // Get the updated member count
             const count = await memberCounter.getMemberCount(server);
-            const channelName = `Members: ${count}`;
+            const channelName = `👤•Members: ${count}`;
     
             // Find the channel to update
             const userCountChannel: Channel | undefined = server.channels.find(
-                (channel: Channel) => channel.name.startsWith('Members:')
+                (channel: Channel) => channel.name.startsWith('👤•Members:')
             );
     
             if (userCountChannel) {
